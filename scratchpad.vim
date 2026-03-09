@@ -187,7 +187,11 @@ function! s:RunVisualSelection(background)
 endfunction
 
 function! s:RunCurrentLine(background)
-  let l:line = trim(getline('.'))
+  if foldclosed('.') != -1
+    let l:line = trim(getline(foldclosed('.')))
+  else
+    let l:line = trim(getline('.'))
+  endif
   let l:match = matchlist(l:line, '^pad://\(\S\+\)')
   if !empty(l:match)
     let l:script_name = l:match[1]
