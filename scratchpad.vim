@@ -16,7 +16,7 @@ vnoremap <leader>z <Esc>:set nofoldenable<CR>gvs<Esc>:let @z="# {{{\nclaude --se
 nnoremap <leader>z :set nofoldenable<CR>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n\nEOF\n)\"\n# }}}"<cr>"zp:set foldenable<CR>zO2ji
 nnoremap <leader>b :let @z="pad://" . trim(@") . " "<cr>[z0"zP
 vnoremap <leader>B <Esc>:set nofoldenable<CR>gv!scaffold-scratchpad-agentic-workflow<CR>:set foldenable<CR>zO6ji
-nnoremap <leader>B :set nofoldenable<CR>V!scaffold-scratchpad-agentic-workflow<CR>:set foldenable<CR>zO4ji
+nnoremap <leader>B :set nofoldenable<CR>V!scaffold-scratchpad-agentic-workflow<CR>:set foldenable<CR>zO5ji
 "nnoremap <leader><S-CR> [zV]z
 nnoremap <leader>v :if getline('.') !~# '{{{' <bar> exe "silent! normal! [z" <bar> endif<CR>V]z
 
@@ -86,11 +86,11 @@ endfunction
 
 vnoremap <leader>n :call <SID>NameFold()<CR>
 
-function! FoldAround() range                                                              
-    set nofoldenable                                                                      
-    let [open, close] = split(&foldmarker, ',')                                           
+function! FoldAround() range
+    set nofoldenable
+    let [open, close] = split(&foldmarker, ',')
     let cms = &commentstring
-    let indent = matchstr(getline(a:firstline), '^\s*')                                   
+    let indent = matchstr(getline(a:firstline), '^\s*')
     call append(a:lastline, indent . substitute(cms, '%s', close, ''))
     call append(a:firstline - 1, indent . substitute(cms, '%s', open, ''))
     set foldenable
