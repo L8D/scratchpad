@@ -21,6 +21,7 @@ nnoremap <leader>B :set nofoldenable<CR>V!scaffold-scratchpad-agentic-workflow<C
 nnoremap <leader>v :if getline('.') !~# '{{{' <bar> exe "silent! normal! [z" <bar> endif<CR>V]z
 
 map <leader>` <cmd>silent! mkview <bar> edit .pad/index.zsh <bar> silent! loadview<cr>
+nnoremap <leader>! <cmd>call <SID>JumpToNextPad()<cr>
 
 
 function! s:GetClaudeCmd()
@@ -152,6 +153,19 @@ augroup ScratchpadScripts
   autocmd InsertLeave * call s:ScratchpadScriptSync()
   autocmd BufWritePost * call s:ScratchpadScriptSync()
 augroup END
+
+function! s:JumpToNextPad()
+  let l:name = expand('%:t')
+  if l:name =~# '^execute-'
+    let l:target = 'pad://ralph-' . l:name[8:]
+  else
+    let l:target = 'pad://execute-' . l:name
+  endif
+  bdelete!
+  edit .pad/index.zsh
+  call search(l:target)
+  normal! zv
+endfunction
 
 function! s:SwitchToExistingBuffer(name)
   for l:buf in getbufinfo({'buflisted': 1})
