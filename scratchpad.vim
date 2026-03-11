@@ -48,7 +48,7 @@ function! s:GetClaudeCmd()
   elseif l:choice == 2
     let l:mode = ' --permission-mode acceptEdits'
   elseif l:choice == 3
-    let l:mode = ' --setting-sources "" --settings ~/.claude/settings.notify.json'
+    let l:mode = ''
   elseif l:choice == 4
     let l:mode = ' --setting-sources "user" --settings ~/.claude/settings.notify.json'
   endif
