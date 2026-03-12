@@ -187,7 +187,7 @@ function! s:JumpToNextPad()
   bdelete!
   edit .pad/index.zsh
   call search(l:target)
-  normal! zv
+  normal! zvzc
 endfunction
 
 function! s:SwitchToExistingBuffer(name)
