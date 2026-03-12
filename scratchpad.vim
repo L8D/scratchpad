@@ -23,7 +23,7 @@ nnoremap <leader>v :if getline('.') !~# '{{{' <bar> exe "silent! normal! [z" <ba
 
 map <leader>` <cmd>silent! mkview <bar> edit .pad/index.zsh <bar> silent! loadview<cr>
 nnoremap <leader>! <cmd>call <SID>JumpToNextPad()<cr>
-nnoremap <leader>? <cmd>call <SID>JumpToLatestCrierBuffer()<cr>
+nnoremap <leader>? <cmd>call <SID>JumpToLatestCrierBuffer()<cr>G
 
 
 function! s:GetClaudeCmd()
