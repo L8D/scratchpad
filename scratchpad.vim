@@ -23,6 +23,7 @@ nnoremap <leader>v :if getline('.') !~# '{{{' <bar> exe "silent! normal! [z" <ba
 
 map <leader>` <cmd>silent! mkview <bar> edit .pad/index.zsh <bar> silent! loadview<cr>
 nnoremap <leader>! <cmd>call <SID>JumpToNextPad()<cr>
+nnoremap <leader>? <cmd>call <SID>JumpToLatestCrierBuffer()<cr>
 
 
 function! s:GetClaudeCmd()
@@ -154,6 +155,27 @@ augroup ScratchpadScripts
   autocmd InsertLeave * call s:ScratchpadScriptSync()
   autocmd BufWritePost * call s:ScratchpadScriptSync()
 augroup END
+
+function! s:JumpToLatestCrierBuffer()
+  let l:state_file = expand('~/.claude/latest-crier-session-buffer-name')
+  if !filereadable(l:state_file)
+    echohl WarningMsg | echo 'No recent crier notification' | echohl None
+    return
+  endif
+  let l:name = trim(join(readfile(l:state_file), ''))
+  if empty(l:name)
+    echohl WarningMsg | echo 'No recent crier notification' | echohl None
+    return
+  endif
+  " Try switching to existing buffer first
+  if s:SwitchToExistingBuffer(l:name)
+    return
+  endif
+  " Fall back to finding it in the pad index
+  edit .pad/index.zsh
+  call search('pad://' . l:name)
+  normal! zv
+endfunction
 
 function! s:JumpToNextPad()
   let l:name = expand('%:t')
