@@ -10,7 +10,7 @@ vnoremap ~~ "0y:call <SID>RunVisualSelection(0)<CR>
 nnoremap ~<Space> :call <SID>RunCurrentLine(1)<CR>
 vnoremap ~<Space> "0y:call <SID>RunVisualSelection(1)<CR>
 vnoremap ~! y:let @z=trim(system(@"))<CR>gv"zp`[V`]
-vnoremap <leader># :'<,'>!xargs -I {} bash -c 'echo $(kota tickets create --title "$@" \| jq -r ".identifier") "$@"' _ {}<CR>
+vnoremap <leader># :<C-u>silent '<,'>!xargs -I {} bash -c 'echo $(kota tickets create --title "$@" \| jq -r ".identifier") "$@"' _ {}<CR>
 vnoremap <leader>Z <Esc>:set nofoldenable<CR>gvs<Esc>:let @z="# {{{\narco commit --until $(arco-select-chunk) <<'EOF' && arco-announce-announce \"$(arco-select-ticket)\"\n" . substitute(substitute(@", '^# {{{\n', '', ''), '\n# }}}\n', '\n', '') . "EOF\n# }}}\n"<CR>"zP:set foldenable<CR>zO`[v`]
 nmap <leader>Z :let @z="\n"<cr>"zPkV<leader>Z<Esc>`]2ki
 vnoremap <leader>z <Esc>:set nofoldenable<CR>gvs<Esc>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n" . substitute(substitute(@", '^\s*#\s*{{{\n\?', '', ''), '\n# }}}\n', '\n', '') . "EOF\n)\"\n# }}}\n"<CR>gv"zp:set foldenable<CR>zO`[V`]
