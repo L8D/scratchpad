@@ -192,7 +192,7 @@ endfunction
 
 function! s:SwitchToExistingBuffer(name)
   for l:buf in getbufinfo({'buflisted': 1})
-    if l:buf.name ==# a:name
+    if l:buf.name =~# '\V' . escape(a:name, '\')
       exe 'buffer ' . l:buf.bufnr
       return 1
     endif
