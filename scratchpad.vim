@@ -179,10 +179,8 @@ endfunction
 
 function! s:JumpToNextPad()
   let l:name = expand('%:t')
-  if l:name =~# '^execute-'
-    let l:target = 'pad://ralph-' . l:name[8:]
-  elseif l:name =~# '^decompose-'
-    let l:target = 'pad://execute-' . l:name[10:]
+  if l:name =~# '^decompose-'
+    let l:target = 'pad://ralph-' . l:name[10:]
   else
     let l:target = 'pad://decompose-' . l:name
   endif
