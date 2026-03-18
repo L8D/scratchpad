@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 WORKTREE_ROOT=$(dirname $(dirname $PWD))
 ISSUE_ID="$(awk '{print $1}')"
-SESSION_ID=$(uuidgen | tr '[:upper:]' '[:lower:]')
-EXECUTION_SESSION_ID=$(uuidgen | tr '[:upper:]' '[:lower:]')
 ISSUE="$(kota tickets read "$ISSUE_ID")"
 BRANCH_NAME="$(echo "$ISSUE" | jq -r '.branchName')"
 TITLE="$(echo "$ISSUE" | jq -r '.title')"
 echo "# $BRANCH_NAME {{{"
 echo "pad://$BRANCH_NAME # {{{"
-echo "export KOTA_CURRENT_TICKET_ID=$ISSUE_ID"
-echo "claude-session $SESSION_ID --permission-mode plan \"\$(cat <<'PROMPT'"
+echo "ollo claude $ISSUE_ID -- --permission-mode plan \"\$(cat <<'PROMPT'"
 echo "$ISSUE_ID" "$TITLE"
 echo
 echo PROMPT
@@ -18,8 +15,7 @@ echo "# }}}"
 echo
 
 echo "pad://decompose-$BRANCH_NAME # {{{"
-echo "export KOTA_CURRENT_TICKET_ID=$ISSUE_ID"
-echo "claude --resume $SESSION_ID --permission-mode plan '/ollo:decompose'"
+echo "ollo claude $ISSUE_ID -- --permission-mode plan '/ollo:decompose'"
 echo "# }}}"
 echo
 
