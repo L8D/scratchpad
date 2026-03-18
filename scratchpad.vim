@@ -1,3 +1,5 @@
+let s:scratchpad_home = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+
 nnoremap <leader>~ gg:set nofoldenable<CR>:let @z="\n\n"<cr>"zP"_dip"zP:let @z="# {{{\n\n# }}}"<cr>"zP:set foldenable<CR>zOji
 vnoremap <leader>~ dgg:set nofoldenable<CR>:let @z="\n\n"<cr>"zPdip"zP:let @z="# {{{\n\n# }}}"<cr>"zP:set foldenable<CR>zOji
 nnoremap <leader>O gg:let @z="\n"<cr>"zP"_dip"zPO
@@ -16,8 +18,8 @@ nmap <leader>Z :let @z="\n"<cr>"zPkV<leader>Z<Esc>`]2ki
 vnoremap <leader>z <Esc>:set nofoldenable<CR>gvs<Esc>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n" . substitute(substitute(@", '^\s*#\s*{{{\n\?', '', ''), '\n# }}}\n', '\n', '') . "EOF\n)\"\n# }}}\n"<CR>gv"zp:set foldenable<CR>zO`[V`]
 nnoremap <leader>z :set nofoldenable<CR>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n\nEOF\n)\"\n# }}}"<cr>"zp:set foldenable<CR>zO2ji
 nnoremap <leader>b :let @z="pad://" . trim(@") . " "<cr>[z0"zP
-vnoremap <leader>B <Esc>:set nofoldenable<CR>gv!scaffold-scratchpad-agentic-workflow<CR>:set foldenable<CR>zO6ji
-nnoremap <leader>B :set nofoldenable<CR>V!scaffold-scratchpad-agentic-workflow<CR>:set foldenable<CR>zO5ji
+vnoremap <leader>B <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>ScaffoldCmd()<CR><CR>:set foldenable<CR>zO6ji
+nnoremap <leader>B :set nofoldenable<CR>V!<C-r>=<SID>ScaffoldCmd()<CR><CR>:set foldenable<CR>zO5ji
 "nnoremap <leader><S-CR> [zV]z
 nnoremap <leader>v :if getline('.') !~# '{{{' <bar> exe "silent! normal! [z" <bar> endif<CR>V]z
 
@@ -198,6 +200,10 @@ function! s:SwitchToExistingBuffer(name)
     endif
   endfor
   return 0
+endfunction
+
+function! s:ScaffoldCmd()
+  return s:scratchpad_home . '/bin/scaffold-scratchpad-agentic-workflow'
 endfunction
 
 function! s:RunVisualSelection(background)

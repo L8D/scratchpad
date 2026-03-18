@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+WORKTREE_ROOT=$(dirname $(dirname $PWD))
+ISSUE_ID="$(awk '{print $1}')"
+SESSION_ID=$(uuidgen | tr '[:upper:]' '[:lower:]')
+EXECUTION_SESSION_ID=$(uuidgen | tr '[:upper:]' '[:lower:]')
+ISSUE="$(kota tickets read "$ISSUE_ID")"
+BRANCH_NAME="$(echo "$ISSUE" | jq -r '.branchName')"
+TITLE="$(echo "$ISSUE" | jq -r '.title')"
+echo "# $BRANCH_NAME {{{"
+echo "pad://$BRANCH_NAME # {{{"
+echo "export KOTA_CURRENT_TICKET_ID=$ISSUE_ID"
+echo "claude-session $SESSION_ID --permission-mode plan \"\$(cat <<'PROMPT'"
+echo "$ISSUE_ID" "$TITLE"
+echo
+echo PROMPT
+echo ")\""
+echo "# }}}"
+echo
+
+echo "pad://decompose-$BRANCH_NAME # {{{"
+echo "export KOTA_CURRENT_TICKET_ID=$ISSUE_ID"
+echo "claude --resume $SESSION_ID --permission-mode plan '/ollo:decompose'"
+echo "# }}}"
+echo
+
+echo "pad://ralph-$BRANCH_NAME # {{{"
+echo "ollo create-subtasks-from-decomposition-plan --from-ticket $ISSUE_ID"
+if [ "${VIM_SCRATCHPAD_WORKTREES_ENABLED:-}" = "true" ]; then
+  echo 'start-worktree '$ISSUE_ID' $(git-spice top --dry-run)'
+  echo "cd \$(branch-working-directory $BRANCH_NAME)"
+  echo "ollo ralph"
+  echo 'cd '$WORKTREE_ROOT/worktrees/main' && git worktree remove $(branch-working-directory '$BRANCH_NAME')'
+else
+  echo "[ \"\$(git rev-parse --abbrev-ref HEAD)\" != \"$BRANCH_NAME\" ] && git-spice branch create --no-commit $BRANCH_NAME"
+  echo "ollo ralph"
+fi
+echo "# }}}"
+echo
+echo .git/index
+echo capture "$ISSUE_ID"
+echo "git-spice branch fold --no-prompt"
+echo "# }}}"
