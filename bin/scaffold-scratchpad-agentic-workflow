@@ -23,7 +23,6 @@ echo "pad://ralph-$BRANCH_NAME # {{{"
 echo "ollo create-subtasks-from-decomposition-plan --from-ticket $ISSUE_ID"
 if [ "${VIM_SCRATCHPAD_WORKTREES_ENABLED:-}" = "true" ]; then
   echo 'ollo use-worktree '$ISSUE_ID' $(git-spice top --dry-run)'
-  echo cd $WORKTREE_ROOT/worktrees/$TICKET_ID
   echo "cd \$(branch-working-directory $BRANCH_NAME)"
   echo "ollo ralph"
   echo 'cd '$WORKTREE_ROOT/worktrees/main' && git worktree remove $(branch-working-directory '$BRANCH_NAME')'
