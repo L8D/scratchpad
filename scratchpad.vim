@@ -18,7 +18,7 @@ nmap <leader>Z :let @z="\n"<cr>"zPkV<leader>Z<Esc>`]2ki
 vnoremap <leader>z <Esc>:set nofoldenable<CR>gvs<Esc>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n" . substitute(substitute(@", '^\s*#\s*{{{\n\?', '', ''), '\n# }}}\n', '\n', '') . "EOF\n)\"\n# }}}\n"<CR>gv"zp:set foldenable<CR>zO`[V`]
 nnoremap <leader>z :set nofoldenable<CR>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n\nEOF\n)\"\n# }}}"<cr>"zp:set foldenable<CR>zO2ji
 nnoremap <leader>b :let @z="pad://" . trim(@") . " "<cr>[z0"zP
-vnoremap <leader>B <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>ScaffoldCmd()<CR><CR>:set foldenable<CR>zO6ji
+vnoremap <leader>B <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>ScaffoldCmd()<CR><CR>:set foldenable<CR>zO5ji
 nnoremap <leader>B :set nofoldenable<CR>V!<C-r>=<SID>ScaffoldCmd()<CR><CR>:set foldenable<CR>zO5ji
 "nnoremap <leader><S-CR> [zV]z
 nnoremap <leader>v :if getline('.') !~# '{{{' <bar> exe "silent! normal! [z" <bar> endif<CR>V]z
