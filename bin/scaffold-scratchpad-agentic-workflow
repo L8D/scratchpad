@@ -4,7 +4,7 @@ ISSUE_ID="$(awk '{print $1}')"
 ISSUE="$(kota tickets read "$ISSUE_ID")"
 STATUS="$(echo "$ISSUE" | jq -r '.status')"
 if [ "$STATUS" = "Backlog" ] || [ "$STATUS" = "Unstarted" ]; then
-  kota tickets update "$ISSUE_ID" --status Started >&2
+  kota tickets update "$ISSUE_ID" --status Started >/dev/null 2>&1
 fi
 BRANCH_NAME="$(echo "$ISSUE" | jq -r '.branchName')"
 TITLE="$(echo "$ISSUE" | jq -r '.title')"
@@ -12,6 +12,7 @@ echo "# $BRANCH_NAME {{{"
 echo "pad://$BRANCH_NAME # {{{"
 echo "ollo claude $ISSUE_ID -- --permission-mode plan \"\$(cat <<'PROMPT'"
 echo "$ISSUE_ID" "$TITLE"
+echo
 echo
 echo PROMPT
 echo ")\""
