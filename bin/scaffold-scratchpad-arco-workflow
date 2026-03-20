@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "arco commit --until \$(arco select-chunk) <<'EOF' && arco publish \"\$(arco select-ticket)\""
+cat
+echo "EOF"
