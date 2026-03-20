@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# fold-transform: Extract fold markers and pipe body through subcommand
+#
+# Reads a vim fold from stdin, preserves the header line (containing {{{),
+# pipes only the body through the subcommand, and re-wraps with closing marker.
+#
+# Usage: fold-transform <subcommand> [args...]
+
+# Read all lines from stdin, including final line without trailing newline
+declare -a lines
+while IFS= read -r line || [[ -n "$line" ]]; do
+  lines+=("$line")
+done
+
+if [[ ${#lines[@]} -eq 0 ]]; then
+  exit 0
+fi
+
+# First line is the header
+header="${lines[0]}"
+
+# Output the header
+echo "$header"
+
+# Determine the last index and closing marker
+last_idx=$((${#lines[@]} - 1))
+closing_marker="${lines[$last_idx]}"
+
+# Extract and pipe body through subcommand
+# Body is lines 1 through (last_idx - 1)
+if [[ $last_idx -gt 1 ]]; then
+  body_lines=("${lines[@]:1:$last_idx-1}")
+
+  # Join body lines with newlines and pipe to subcommand
+  printf '%s\n' "${body_lines[@]}" | "$@"
+elif [[ $last_idx -eq 1 ]]; then
+  # Only one line of body (header + closing)
+  # Pipe empty input to subcommand since body is between them
+  printf '' | "$@"
+fi
+
+# Output the closing marker
+echo "$closing_marker"
