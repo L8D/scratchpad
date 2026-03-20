@@ -16,7 +16,7 @@ vnoremap <leader># :<C-u>silent! '<,'>!xargs -I {} bash -c 'echo $(kota tickets 
 vnoremap <leader>Z <Esc>:set nofoldenable<CR>gv!fold-transform scaffold-scratchpad-arco-workflow<CR>:set foldenable<CR>zO
 nmap <leader>Z :set nofoldenable<CR>V!fold-transform scaffold-scratchpad-arco-workflow<CR>:set foldenable<CR>zO
 nnoremap <leader>T :call <SID>SelectTicketsIntoBuffer()<CR>
-vnoremap <leader>A <Esc>:set nofoldenable<CR>gv!fold-transform <C-r>=<SID>BatchScaffoldCmd()<CR><CR>:set foldenable<CR>zO
+vnoremap <leader>A <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>FoldTransformCmd()<CR> <C-r>=<SID>BatchScaffoldCmd()<CR><CR>:set foldenable<CR>zO
 vnoremap <leader>z <Esc>:set nofoldenable<CR>gvs<Esc>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n" . substitute(substitute(@", '^\s*#\s*{{{\n\?', '', ''), '\n# }}}\n', '\n', '') . "EOF\n)\"\n# }}}\n"<CR>gv"zp:set foldenable<CR>zO`[V`]
 nnoremap <leader>z :set nofoldenable<CR>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n\nEOF\n)\"\n# }}}"<cr>"zp:set foldenable<CR>zO2ji
 nnoremap <leader>b :let @z="pad://" . trim(@") . " "<cr>[z0"zP
@@ -245,6 +245,10 @@ endfunction
 
 function! s:ScaffoldCmd()
   return s:scratchpad_home . '/bin/scaffold-scratchpad-agentic-workflow'
+endfunction
+
+function! s:FoldTransformCmd()
+  return s:scratchpad_home . '/bin/fold-transform'
 endfunction
 
 function! s:RunVisualSelection(background)
