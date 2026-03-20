@@ -2,6 +2,10 @@
 WORKTREE_ROOT=$(dirname $(dirname $PWD))
 ISSUE_ID="$(awk '{print $1}')"
 ISSUE="$(kota tickets read "$ISSUE_ID")"
+STATUS="$(echo "$ISSUE" | jq -r '.status')"
+if [ "$STATUS" = "Backlog" ] || [ "$STATUS" = "Unstarted" ]; then
+  kota tickets update "$ISSUE_ID" --status Started >&2
+fi
 BRANCH_NAME="$(echo "$ISSUE" | jq -r '.branchName')"
 TITLE="$(echo "$ISSUE" | jq -r '.title')"
 echo "# $BRANCH_NAME {{{"
