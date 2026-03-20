@@ -15,6 +15,8 @@ vnoremap ~! y:let @z=trim(system(@"))<CR>gv"zp`[V`]
 vnoremap <leader># :<C-u>silent! '<,'>!xargs -I {} bash -c 'echo $(kota tickets create --title "$@" \| jq -r ".identifier") "$@"' _ {}<CR>:redraw!<CR>
 vnoremap <leader>Z <Esc>:set nofoldenable<CR>gvs<Esc>:let @z="# {{{\narco commit --until $(arco-select-chunk) <<'EOF' && arco-publish \"$(arco-select-ticket)\"\n" . substitute(substitute(@", '^# {{{\n', '', ''), '\n# }}}\n', '\n', '') . "EOF\n# }}}\n"<CR>"zP:set foldenable<CR>zO`[v`]
 nmap <leader>Z :let @z="\n"<cr>"zPkV<leader>Z<Esc>`]2ki
+nnoremap <leader>T :call <SID>SelectTicketsIntoBuffer()<CR>
+vnoremap <leader>A <Esc>:set nofoldenable<CR>gv!fold-transform <C-r>=<SID>BatchScaffoldCmd()<CR><CR>:set foldenable<CR>zO
 vnoremap <leader>z <Esc>:set nofoldenable<CR>gvs<Esc>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n" . substitute(substitute(@", '^\s*#\s*{{{\n\?', '', ''), '\n# }}}\n', '\n', '') . "EOF\n)\"\n# }}}\n"<CR>gv"zp:set foldenable<CR>zO`[V`]
 nnoremap <leader>z :set nofoldenable<CR>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n\nEOF\n)\"\n# }}}"<cr>"zp:set foldenable<CR>zO2ji
 nnoremap <leader>b :let @z="pad://" . trim(@") . " "<cr>[z0"zP
@@ -76,6 +78,41 @@ function! s:ClaudeVisual()
 endfunction
 
 vnoremap <leader>z <Esc>:call <SID>ClaudeVisual()<CR>
+
+function! s:SelectTicketsIntoBuffer()
+  " Save current buffer number and cursor position
+  let l:source_buf = bufnr('%')
+  let l:source_line = line('.')
+
+  " Create temp file for ticket output
+  let l:tmpfile = tempname()
+
+  " Run select-tickets in a terminal, redirecting stdout to temp file
+  exe 'term zsh --login -c "arco-select-tickets > ' . shellescape(l:tmpfile) . '"'
+  normal! i
+
+  " Set up autocmd to read results back on terminal close
+  exe 'autocmd TermClose <buffer> ++once call s:InsertTicketResults(' . l:source_buf . ', ' . l:source_line . ', ' . string(l:tmpfile) . ')'
+endfunction
+
+function! s:InsertTicketResults(buf, line, tmpfile)
+  " Switch back to the source buffer
+  exe 'buffer ' . a:buf
+
+  " Read ticket IDs from temp file
+  if filereadable(a:tmpfile)
+    let l:lines = readfile(a:tmpfile)
+    call filter(l:lines, 'v:val != ""')
+    if !empty(l:lines)
+      call append(a:line - 1, l:lines)
+    endif
+    call delete(a:tmpfile)
+  endif
+endfunction
+
+function! s:BatchScaffoldCmd()
+  return s:scratchpad_home . '/bin/scaffold-scratchpad-arco-batch-workflow'
+endfunction
 
 function! s:NameFold() range
   let l:name = input('Buffer name: ')
