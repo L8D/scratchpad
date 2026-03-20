@@ -88,7 +88,7 @@ function! s:SelectTicketsIntoBuffer()
   let l:tmpfile = tempname()
 
   " Run select-tickets in a terminal, redirecting stdout to temp file
-  exe 'term zsh --login -c "arco-select-tickets > ' . shellescape(l:tmpfile) . '"'
+  exe 'term zsh --login -c "arco select-tickets > ' . shellescape(l:tmpfile) . '"'
   normal! i
 
   " Set up autocmd to read results back on terminal close
