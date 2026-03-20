@@ -96,8 +96,12 @@ function! s:SelectTicketsIntoBuffer()
 endfunction
 
 function! s:InsertTicketResults(buf, line, tmpfile)
-  " Switch back to the source buffer
+  " Close the terminal buffer
+  let l:term_buf = bufnr('%')
   exe 'buffer ' . a:buf
+
+  " Delete the terminal buffer
+  exe 'bdelete! ' . l:term_buf
 
   " Read ticket IDs from temp file
   if filereadable(a:tmpfile)
