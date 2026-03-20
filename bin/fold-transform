@@ -18,6 +18,12 @@ if [[ ${#lines[@]} -eq 0 ]]; then
   exit 0
 fi
 
+# If no fold markers, pass everything through the subcommand as-is
+if [[ ! "${lines[0]}" =~ \{\{\{ ]] || [[ ! "${lines[$((${#lines[@]} - 1))]}" =~ \}\}\} ]]; then
+  printf '%s\n' "${lines[@]}" | "$@"
+  exit 0
+fi
+
 # First line is the header
 header="${lines[0]}"
 
