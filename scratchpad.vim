@@ -13,8 +13,8 @@ nnoremap ~<Space> :call <SID>RunCurrentLine(1)<CR>
 vnoremap ~<Space> "0y:call <SID>RunVisualSelection(1)<CR>
 vnoremap ~! y:let @z=trim(system(@"))<CR>gv"zp`[V`]
 vnoremap <leader># :<C-u>silent! '<,'>!xargs -I {} bash -c 'echo $(kota tickets create --title "$@" \| jq -r ".identifier") "$@"' _ {}<CR>:redraw!<CR>
-vnoremap <leader>Z <Esc>:set nofoldenable<CR>gvs<Esc>:let @z="# {{{\narco commit --until $(arco-select-chunk) <<'EOF' && arco-publish \"$(arco-select-ticket)\"\n" . substitute(substitute(@", '^# {{{\n', '', ''), '\n# }}}\n', '\n', '') . "EOF\n# }}}\n"<CR>"zP:set foldenable<CR>zO`[v`]
-nmap <leader>Z :let @z="\n"<cr>"zPkV<leader>Z<Esc>`]2ki
+vnoremap <leader>Z <Esc>:set nofoldenable<CR>gv!fold-transform scaffold-scratchpad-arco-workflow<CR>:set foldenable<CR>zO
+nmap <leader>Z :set nofoldenable<CR>V!fold-transform scaffold-scratchpad-arco-workflow<CR>:set foldenable<CR>zO
 nnoremap <leader>T :call <SID>SelectTicketsIntoBuffer()<CR>
 vnoremap <leader>A <Esc>:set nofoldenable<CR>gv!fold-transform <C-r>=<SID>BatchScaffoldCmd()<CR><CR>:set foldenable<CR>zO
 vnoremap <leader>z <Esc>:set nofoldenable<CR>gvs<Esc>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n" . substitute(substitute(@", '^\s*#\s*{{{\n\?', '', ''), '\n# }}}\n', '\n', '') . "EOF\n)\"\n# }}}\n"<CR>gv"zp:set foldenable<CR>zO`[V`]
