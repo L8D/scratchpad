@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Validate argument
+if [[ $# -ne 1 ]]; then
+  echo "Usage: scaffold-scratchpad-claude-workflow <mode>" >&2
+  echo "Modes: plan, edit, converse, converse-user" >&2
+  exit 1
+fi
+
+mode="$1"
+
+# Generate lowercase UUID
+uuid=$(uuidgen | tr '[:upper:]' '[:lower:]')
+
+# Build flags based on mode
+case "$mode" in
+  plan)
+    flags="--permission-mode plan"
+    ;;
+  edit)
+    flags="--permission-mode acceptEdits"
+    ;;
+  converse)
+    flags=""
+    ;;
+  converse-user)
+    flags="--setting-sources \"user\" --settings ~/.claude/settings.notify.json"
+    ;;
+  *)
+    echo "Invalid mode: $mode" >&2
+    echo "Valid modes: plan, edit, converse, converse-user" >&2
+    exit 1
+    ;;
+esac
+
+# Output command template
+if [[ -z "$flags" ]]; then
+  echo "claude-session $uuid -- \"\$(cat <<'EOF'"
+else
+  echo "claude-session $uuid $flags -- \"\$(cat <<'EOF'"
+fi
+cat
+echo "EOF"
+echo ")\""
