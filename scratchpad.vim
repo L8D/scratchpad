@@ -13,7 +13,7 @@ nnoremap ~<Space> :call <SID>RunCurrentLine(1)<CR>
 vnoremap ~<Space> "0y:call <SID>RunVisualSelection(1)<CR>
 vnoremap ~! y:let @z=trim(system(@"))<CR>gv"zp`[V`]
 vnoremap <leader># :<C-u>silent! '<,'>!xargs -I {} bash -c 'echo $(kota tickets create --title "$@" \| jq -r ".identifier") "$@"' _ {}<CR>:redraw!<CR>
-vnoremap <leader>Z <Esc>:set nofoldenable<CR>gv!fold-transform scaffold-scratchpad-arco-workflow<CR>:set foldenable<CR>zO
+vnoremap <leader>Z <Esc>:set nofoldenable<CR>gv!fold-transform scaffold-scratchpad-arco-workflow<CR>:set foldenable<CR>zO`[V`]
 nmap <leader>Z :set nofoldenable<CR>V!fold-transform scaffold-scratchpad-arco-workflow<CR>:set foldenable<CR>zO
 nnoremap <leader>T :call <SID>SelectTicketsIntoBuffer()<CR>
 vnoremap <leader>A <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>FoldTransformCmd()<CR> <C-r>=<SID>BatchScaffoldCmd()<CR><CR>:set foldenable<CR>zO
