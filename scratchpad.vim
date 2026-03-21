@@ -44,11 +44,14 @@ function! s:ClaudeFilter(visual)
   let l:modes = ['plan', 'edit', 'converse', 'converse-user']
   let l:mode = l:modes[l:choice - 1]
 
+  let l:fold_transform = s:FoldTransformCmd()
+  let l:scaffold_claude = s:ScaffoldClaudeWorkflowCmd()
+
   set nofoldenable
   if a:visual
-    execute "normal! gv!fold-transform scaffold-scratchpad-claude-workflow " . l:mode . "\<CR>"
+    execute "normal! gv!" . l:fold_transform . " " . l:scaffold_claude . " " . l:mode . "\<CR>\<CR>"
   else
-    execute "normal! V!fold-transform scaffold-scratchpad-claude-workflow " . l:mode . "\<CR>"
+    execute "normal! V!" . l:fold_transform . " " . l:scaffold_claude . " " . l:mode . "\<CR>\<CR>"
   endif
   set foldenable
   normal! zO
@@ -227,6 +230,10 @@ endfunction
 
 function! s:FoldTransformCmd()
   return s:scratchpad_home . '/bin/fold-transform'
+endfunction
+
+function! s:ScaffoldClaudeWorkflowCmd()
+  return s:scratchpad_home . '/bin/scaffold-scratchpad-claude-workflow'
 endfunction
 
 function! s:RunVisualSelection(background)
