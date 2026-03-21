@@ -274,3 +274,32 @@ function! s:RunCurrentLine(background)
     normal! i
   endif
 endfunction
+
+function! s:GetCurrentFoldName()
+  let l:lnum = search('{{{', 'bnW')
+  if l:lnum == 0
+    return ''
+  endif
+  let l:line = getline(l:lnum)
+  let l:match = matchlist(l:line, '^pad://\(\S\+\)')
+  if !empty(l:match)
+    return l:match[1]
+  endif
+  let l:match = matchlist(l:line, '^#\s*\(.\{-}\)\s*{{{')
+  if !empty(l:match)
+    return l:match[1]
+  endif
+  return ''
+endfunction
+
+function! ScratchpadTitle()
+  if exists('b:pad_fold_name') && !empty(b:pad_fold_name)
+    return b:pad_fold_name
+  endif
+  return expand('%')
+endfunction
+
+augroup ScratchpadTitle
+  autocmd!
+  autocmd CursorMoved .pad/* let b:pad_fold_name = s:GetCurrentFoldName()
+augroup END
