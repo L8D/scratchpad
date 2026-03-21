@@ -17,8 +17,6 @@ vnoremap <leader>Z <Esc>:set nofoldenable<CR>gv!fold-transform scaffold-scratchp
 nmap <leader>Z :set nofoldenable<CR>V!fold-transform scaffold-scratchpad-arco-workflow<CR>:set foldenable<CR>zO
 nnoremap <leader>T :call <SID>SelectTicketsIntoBuffer()<CR>
 vnoremap <leader>A <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>FoldTransformCmd()<CR> <C-r>=<SID>BatchScaffoldCmd()<CR><CR>:set foldenable<CR>zO
-vnoremap <leader>z <Esc>:set nofoldenable<CR>gvs<Esc>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n" . substitute(substitute(@", '^\s*#\s*{{{\n\?', '', ''), '\n# }}}\n', '\n', '') . "EOF\n)\"\n# }}}\n"<CR>gv"zp:set foldenable<CR>zO`[V`]
-nnoremap <leader>z :set nofoldenable<CR>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n\nEOF\n)\"\n# }}}"<cr>"zp:set foldenable<CR>zO2ji
 nnoremap <leader>b :let @z="pad://" . trim(@") . " "<cr>[z0"zP
 vnoremap <leader>B <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>ScaffoldCmd()<CR><CR>:set foldenable<CR>zO5ji
 nnoremap <leader>B :set nofoldenable<CR>V!<C-r>=<SID>ScaffoldCmd()<CR><CR>:set foldenable<CR>zO5ji
@@ -30,7 +28,8 @@ nnoremap <leader>! <cmd>call <SID>JumpToNextPad()<cr>
 nnoremap <leader>? <cmd>call <SID>JumpToLatestCrierBuffer()<cr>G
 
 
-function! s:GetClaudeCmd()
+
+function! s:ClaudeFilter(visual)
   let l:choice = inputlist([
     \ 'Select Claude mode:',
     \ '1. plan',
@@ -38,46 +37,25 @@ function! s:GetClaudeCmd()
     \ '3. converse',
     \ '4. converse (user)',
     \ ])
-  if l:choice < 1 || l:choice > 6
-    return ''
+  if l:choice < 1 || l:choice > 4
+    return
   endif
 
-  let l:uuid = tolower(substitute(system('uuidgen'), '\n', '', 'g'))
-  let l:cmd = 'claude-session ' . l:uuid
-  let l:setting_sources = ''
-  let l:mode = ''
-  let l:print = ''
+  let l:modes = ['plan', 'edit', 'converse', 'converse-user']
+  let l:mode = l:modes[l:choice - 1]
 
-  if l:choice == 1
-    let l:mode = ' --permission-mode plan'
-  elseif l:choice == 2
-    let l:mode = ' --permission-mode acceptEdits'
-  elseif l:choice == 3
-    let l:mode = ''
-  elseif l:choice == 4
-    let l:mode = ' --setting-sources "user" --settings ~/.claude/settings.notify.json'
-  endif
-
-  return l:cmd . l:setting_sources . l:mode . l:print
-endfunction
-
-function! s:ClaudeVisual()
-  let l:cmd = s:GetClaudeCmd()
-  if l:cmd == '' | return | endif
   set nofoldenable
-  " Delete the visual selection into the unnamed register
-  silent! normal! gvd
-  " Build the replacement text
-  let l:content = substitute(substitute(@", '^# {{{\n', '', ''), '\n# }}}\n', '\n', '')
-  let @z = "# {{{\n" . l:cmd . " -- \"$(cat <<'EOF'\n" . l:content . "EOF\n)\"\n# }}}\n\n"
-  " Paste register z at current position
-  silent! normal! "zP
+  if a:visual
+    execute "normal! gv!fold-transform scaffold-scratchpad-claude-workflow " . l:mode . "\<CR>"
+  else
+    execute "normal! V!fold-transform scaffold-scratchpad-claude-workflow " . l:mode . "\<CR>"
+  endif
   set foldenable
-  silent! normal! zO
-  call feedkeys("`[V`]", 'n')
+  normal! zO
 endfunction
 
-vnoremap <leader>z <Esc>:call <SID>ClaudeVisual()<CR>
+nnoremap <leader>z :call <SID>ClaudeFilter(0)<CR>
+vnoremap <leader>z <Esc>:call <SID>ClaudeFilter(1)<CR>
 
 function! s:SelectTicketsIntoBuffer()
   " Save current buffer number and cursor position
