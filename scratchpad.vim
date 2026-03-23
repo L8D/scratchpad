@@ -291,10 +291,12 @@ function! s:RunCurrentLine(background)
     let l:fold_start = foldclosed('.')
     let l:fold_end = foldclosedend('.')
     let l:fold_lines = getline(l:fold_start, l:fold_end)
+    " Check for pad:// before filtering it out
+    let l:pad_match = matchlist(get(filter(copy(l:fold_lines), 'v:val =~# "^pad://"'), 0, ''), '^pad://\(\S\+\)')
     call filter(l:fold_lines, 'v:val !~# "^\\s*#.*{{{" && v:val !~# "^\\s*#.*}}}" && v:val !~# "^pad://"')
     let l:lines_list = map(l:fold_lines, 'trim(v:val)')
     call filter(l:lines_list, 'v:val != ""')
-    let l:line = join(l:lines_list, "\n")
+    let l:line = !empty(l:pad_match) ? 'pad://' . l:pad_match[1] : join(l:lines_list, "\n")
   else
     let l:line = trim(getline('.'))
   endif
@@ -308,6 +310,7 @@ function! s:RunCurrentLine(background)
   else
     let l:history_line = shellescape(s:scratchpad_home . '/bin/zsh-history-append') . ' ' . shellescape(l:line)
     exe 'term zsh --login -c ' . shellescape(l:history_line . '; ' . l:line)
+    exe 'file ' . fnameescape(l:line)
   endif
   if a:background
     buffer #
@@ -320,6 +323,14 @@ function! s:GetCurrentFoldName()
   let l:lnum = search('{{{', 'bnW')
   if l:lnum == 0
     return ''
+  endif
+  " Check if there's a closing marker between the fold opener and cursor
+  let l:cur = line('.')
+  if l:cur > l:lnum
+    let l:close = search('}}}', 'bnW')
+    if l:close > l:lnum
+      return ''
+    endif
   endif
   let l:line = getline(l:lnum)
   let l:match = matchlist(l:line, '^pad://\(\S\+\)')
