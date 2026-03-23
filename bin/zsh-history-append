@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+# Appends a command to ~/.zsh_history_inf in zsh extended history format.
+# Usage: zsh-history-append "command text"
+
+local cmd="$1"
+[[ -z "$cmd" ]] && exit 0
+
+local ts
+ts=$(date +%s)
+
+# Escape embedded newlines: replace \n with \\\n (backslash then newline)
+local escaped="${cmd//$'\n'/$'\\\n'}"
+
+print -r -- ": ${ts}:0;${escaped}" >> ~/.zsh_history_inf
