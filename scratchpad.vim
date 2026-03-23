@@ -175,11 +175,13 @@ function! s:ScratchpadScriptSync()
       " l:j is now one past the closing }}} line
       " Collect body lines between pad:// line and closing }}} (exclusive)
       let l:body = l:lines[l:i + 1 : l:j - 2]
+      let l:history_cmd = s:scratchpad_home . '/bin/zsh-history-append'
       let l:header = [
       \ '#!/usr/bin/env zsh',
       \ 'set -euo pipefail',
       \ 'export CLAUDE_NVIM_SESSION_BUFFER_NAME=' . l:name,
       \ 'mybuf mybuf://' . l:name,
+      \ shellescape(l:history_cmd) . ' ' . shellescape(join(l:body, "\n")),
       \ ]
       let l:content = l:header + l:body
 
@@ -267,7 +269,8 @@ function! s:RunVisualSelection(background)
   else
     let l:rand = system('head -c 7 /dev/urandom | base64 | tr -dc a-zA-Z | head -c 7')[:-2]
     let l:fname = '/tmp/vimcmd-' . l:rand
-    call writefile(['set -euo pipefail', 'mybuf mybuf://vimcmd-' . l:rand] + split(@0, '\n'), l:fname, 'b')
+    let l:history_line = shellescape(s:scratchpad_home . '/bin/zsh-history-append') . ' ' . shellescape(@0)
+    call writefile(['set -euo pipefail', 'mybuf mybuf://vimcmd-' . l:rand, l:history_line] + split(@0, '\n'), l:fname, 'b')
 
     exe 'term zsh --login ' . l:fname
   endif
@@ -292,7 +295,8 @@ function! s:RunCurrentLine(background)
       exe 'term zsh --login .pad/bin/' . l:script_name
     endif
   else
-    exe 'term zsh --login -c ' . shellescape(l:line)
+    let l:history_line = shellescape(s:scratchpad_home . '/bin/zsh-history-append') . ' ' . shellescape(l:line)
+    exe 'term zsh --login -c ' . shellescape(l:history_line . '; ' . l:line)
   endif
   if a:background
     buffer #
