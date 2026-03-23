@@ -181,7 +181,7 @@ function! s:ScratchpadScriptSync()
       \ 'set -euo pipefail',
       \ 'export CLAUDE_NVIM_SESSION_BUFFER_NAME=' . l:name,
       \ 'mybuf mybuf://' . l:name,
-      \ shellescape(l:history_cmd) . ' "$(cat <<' . "'" . 'HIST_EOF' . "'" . ')',
+      \ shellescape(l:history_cmd) . ' "$(cat <<' . "'" . 'HIST_EOF' . "'",
       \ ] + l:body + [
       \ 'HIST_EOF',
       \ ')"',
@@ -273,7 +273,7 @@ function! s:RunVisualSelection(background)
     let l:rand = system('head -c 7 /dev/urandom | base64 | tr -dc a-zA-Z | head -c 7')[:-2]
     let l:fname = '/tmp/vimcmd-' . l:rand
     let l:history_cmd = shellescape(s:scratchpad_home . '/bin/zsh-history-append')
-    let l:history_open = l:history_cmd . ' "$(cat <<' . "'" . 'HIST_EOF' . "'" . ')'
+    let l:history_open = l:history_cmd . ' "$(cat <<' . "'" . 'HIST_EOF' . "'"
     let l:cmd_lines = split(@0, '\n')
     call writefile(['set -euo pipefail', 'mybuf mybuf://vimcmd-' . l:rand, l:history_open] + l:cmd_lines + ['HIST_EOF', ')"'] + l:cmd_lines, l:fname, 'b')
 

@@ -8,7 +8,7 @@ local cmd="$1"
 local ts
 ts=$(date +%s)
 
-# Escape embedded newlines: replace \n with \\\n (backslash then newline)
-local escaped="${cmd//$'\n'/$'\\\n'}"
+# For multi-line commands, zsh extended history uses backslash + newline continuation
+local escaped=${cmd//$'\n'/$'\\\n'}
 
-print -r -- ": ${ts}:0;${escaped}" >> ~/.zsh_history_inf
+printf '%s\n' ": ${ts}:0;${escaped}" >> ~/.zsh_history_inf
