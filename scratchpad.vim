@@ -181,7 +181,10 @@ function! s:ScratchpadScriptSync()
       \ 'set -euo pipefail',
       \ 'export CLAUDE_NVIM_SESSION_BUFFER_NAME=' . l:name,
       \ 'mybuf mybuf://' . l:name,
-      \ shellescape(l:history_cmd) . ' ' . shellescape(join(l:body, "\n")),
+      \ shellescape(l:history_cmd) . ' "$(cat <<' . "'" . 'HIST_EOF' . "'" . ')',
+      \ ] + l:body + [
+      \ 'HIST_EOF',
+      \ ')"',
       \ ]
       let l:content = l:header + l:body
 
@@ -269,8 +272,10 @@ function! s:RunVisualSelection(background)
   else
     let l:rand = system('head -c 7 /dev/urandom | base64 | tr -dc a-zA-Z | head -c 7')[:-2]
     let l:fname = '/tmp/vimcmd-' . l:rand
-    let l:history_line = shellescape(s:scratchpad_home . '/bin/zsh-history-append') . ' ' . shellescape(@0)
-    call writefile(['set -euo pipefail', 'mybuf mybuf://vimcmd-' . l:rand, l:history_line] + split(@0, '\n'), l:fname, 'b')
+    let l:history_cmd = shellescape(s:scratchpad_home . '/bin/zsh-history-append')
+    let l:history_open = l:history_cmd . ' "$(cat <<' . "'" . 'HIST_EOF' . "'" . ')'
+    let l:cmd_lines = split(@0, '\n')
+    call writefile(['set -euo pipefail', 'mybuf mybuf://vimcmd-' . l:rand, l:history_open] + l:cmd_lines + ['HIST_EOF', ')"'] + l:cmd_lines, l:fname, 'b')
 
     exe 'term zsh --login ' . l:fname
   endif
@@ -283,7 +288,13 @@ endfunction
 
 function! s:RunCurrentLine(background)
   if foldclosed('.') != -1
-    let l:line = trim(getline(foldclosed('.')))
+    let l:fold_start = foldclosed('.')
+    let l:fold_end = foldclosedend('.')
+    let l:fold_lines = getline(l:fold_start, l:fold_end)
+    call filter(l:fold_lines, 'v:val !~# "^\\s*#.*{{{" && v:val !~# "^\\s*#.*}}}" && v:val !~# "^pad://"')
+    let l:lines_list = map(l:fold_lines, 'trim(v:val)')
+    call filter(l:lines_list, 'v:val != ""')
+    let l:line = join(l:lines_list, "\n")
   else
     let l:line = trim(getline('.'))
   endif
