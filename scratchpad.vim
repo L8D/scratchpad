@@ -17,7 +17,6 @@ vnoremap <leader>Z <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>FoldTransformCmd()<CR
 nmap <leader>Z :set nofoldenable<CR>V!<C-r>=<SID>FoldTransformCmd()<CR> <C-r>=<SID>ScaffoldArcoWorkflowCmd()<CR><CR>:set foldenable<CR>zO
 nnoremap <leader>T :call <SID>SelectTicketsIntoBuffer()<CR>
 vnoremap <leader>A <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>FoldTransformCmd()<CR> <C-r>=<SID>BatchScaffoldCmd()<CR><CR>:set foldenable<CR>zO
-vnoremap <leader>z <Esc>:set nofoldenable<CR>gvs<Esc>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n" . substitute(substitute(@", '^\s*#\s*{{{\n\?', '', ''), '\n# }}}\n', '\n', '') . "EOF\n)\"\n# }}}\n"<CR>gv"zp:set foldenable<CR>zO`[V`]
 nnoremap <leader>z :set nofoldenable<CR>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n\nEOF\n)\"\n# }}}"<cr>"zp:set foldenable<CR>zO2ji
 nnoremap <leader>b :let @z="pad://" . trim(@") . " "<cr>[z0"zP
 vnoremap <leader>B <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>ScaffoldCmd()<CR><CR>:set foldenable<CR>zO5ji
@@ -64,17 +63,9 @@ endfunction
 function! s:ClaudeVisual()
   let l:cmd = s:GetClaudeCmd()
   if l:cmd == '' | return | endif
+  let l:filter = "gv!" . s:FoldTransformCmd() . " " . s:ScaffoldClaudeSessionCmd() . " " . shellescape(l:cmd)
   set nofoldenable
-  " Delete the visual selection into the unnamed register
-  silent! normal! gvd
-  " Build the replacement text
-  let l:content = substitute(substitute(@", '^# {{{\n', '', ''), '\n# }}}\n', '\n', '')
-  let @z = "# {{{\n" . l:cmd . " -- \"$(cat <<'EOF'\n" . l:content . "EOF\n)\"\n# }}}\n\n"
-  " Paste register z at current position
-  silent! normal! "zP
-  set foldenable
-  silent! normal! zO
-  call feedkeys("`[V`]", 'n')
+  call feedkeys(l:filter . "\<CR>:set foldenable\<CR>zO`[V`]", 'n')
 endfunction
 
 vnoremap <leader>z <Esc>:call <SID>ClaudeVisual()<CR>
@@ -258,6 +249,10 @@ endfunction
 
 function! s:ScaffoldArcoWorkflowCmd()
   return s:scratchpad_home . '/bin/scaffold-scratchpad-arco-workflow'
+endfunction
+
+function! s:ScaffoldClaudeSessionCmd()
+  return s:scratchpad_home . '/bin/scaffold-scratchpad-claude-session'
 endfunction
 
 function! s:RunVisualSelection(background)
