@@ -4,7 +4,7 @@ ISSUE_ID="$(awk '{print $1}')"
 ISSUE="$(kota tickets read "$ISSUE_ID")"
 STATUS="$(echo "$ISSUE" | jq -r '.status')"
 if [ "$STATUS" = "Backlog" ] || [ "$STATUS" = "Unstarted" ]; then
-  kota tickets update "$ISSUE_ID" --status Started >/dev/null 2>&1
+  kota tickets update "$ISSUE_ID" --status "${KOTA_STATUS_STARTED:-Started}" >/dev/null 2>&1
 fi
 BRANCH_NAME="$(echo "$ISSUE" | jq -r '.branchName')"
 TITLE="$(echo "$ISSUE" | jq -r '.title')"
