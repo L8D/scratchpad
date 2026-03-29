@@ -8,12 +8,13 @@ if [ "$STATUS" = "Backlog" ] || [ "$STATUS" = "Unstarted" ]; then
 fi
 BRANCH_NAME="$(echo "$ISSUE" | jq -r '.branchName')"
 TITLE="$(echo "$ISSUE" | jq -r '.title')"
+DESCRIPTION="$(echo "$ISSUE" | jq -r '.description')"
 echo "# $BRANCH_NAME {{{"
 echo "pad://$BRANCH_NAME # {{{"
 echo "ollo claude $ISSUE_ID -- --permission-mode plan \"\$(cat <<'PROMPT'"
 echo "$ISSUE_ID" "$TITLE"
 echo
-echo
+echo "$DESCRIPTION"
 echo PROMPT
 echo ")\""
 echo "# }}}"
