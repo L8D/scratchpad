@@ -6,6 +6,7 @@ nnoremap <leader>O gg:let @z="\n"<cr>"zP"_dip"zPO
 
 nnoremap <leader>P gg:let @z="\n"<CR>"zP"_dipV"_d"_dip
 inoremap <S-CR> <C-G>u<Esc>Vy:let @z=trim(system(@"))<CR>V"zpgv
+inoremap <C-CR> <Esc>:call <SID>RunCurrentLine(0)<CR>
 nnoremap ~! Vy:let @z=trim(system(@"))<CR>V"zpgv
 nnoremap ~~ :call <SID>RunCurrentLine(0)<CR>
 vnoremap ~~ "0y:call <SID>RunVisualSelection(0)<CR>
@@ -17,6 +18,8 @@ vnoremap <leader>Z <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>FoldTransformCmd()<CR
 nmap <leader>Z :set nofoldenable<CR>V!<C-r>=<SID>FoldTransformCmd()<CR> <C-r>=<SID>ScaffoldArcoWorkflowCmd()<CR><CR>:set foldenable<CR>zO
 nnoremap <leader>T :call <SID>SelectTicketsIntoBuffer()<CR>
 vnoremap <leader>A <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>FoldTransformCmd()<CR> <C-r>=<SID>BatchScaffoldCmd()<CR><CR>:set foldenable<CR>zO
+vnoremap <leader>a :<C-u>silent '<,'>w !xargs ~/bin/ticket-activity-stats.sh --prompt --execute \| pbcopy<CR>:redraw!<CR>gv
+nnoremap <leader>a :read !~/bin/ticket-activity-stats.sh --no-tickets --prompt --execute<CR>
 nnoremap <leader>z :set nofoldenable<CR>:let @z="# {{{\nclaude --setting-sources \"\" --permission-mode default \"$(cat <<'EOF'\n\nEOF\n)\"\n# }}}"<cr>"zp:set foldenable<CR>zO2ji
 nnoremap <leader>b :let @z="pad://" . trim(@") . " "<cr>[z0"zP
 vnoremap <leader>B <Esc>:set nofoldenable<CR>gv!<C-r>=<SID>ScaffoldCmd()<CR><CR>:set foldenable<CR>zO5ji

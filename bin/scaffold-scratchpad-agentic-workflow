@@ -31,7 +31,9 @@ if [ "${VIM_SCRATCHPAD_WORKTREES_ENABLED:-}" = "true" ]; then
   echo 'ollo use-worktree '$ISSUE_ID' $(git-spice top --dry-run)'
   echo "cd \$(branch-working-directory $BRANCH_NAME)"
   echo "ollo ralph"
-  echo 'cd '$WORKTREE_ROOT/worktrees/main' && git worktree remove $(branch-working-directory '$BRANCH_NAME')'
+  echo 'pm2 kill'
+  echo 'docker compose down'
+  echo 'cd '$WORKTREE_ROOT/worktrees/main' && { WT=$(branch-working-directory '$BRANCH_NAME'); if [ -z "$(git -C "$WT" status --porcelain)" ]; then git worktree remove "$WT"; else echo "Worktree is dirty, skipping removal"; fi; }'
 else
   echo "[ \"\$(git rev-parse --abbrev-ref HEAD)\" != \"$BRANCH_NAME\" ] && git-spice branch create --no-commit $BRANCH_NAME"
   echo "ollo ralph"

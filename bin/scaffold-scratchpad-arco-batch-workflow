@@ -28,7 +28,7 @@ while [ "$i" -lt "$N" ]; do
   TICKET_TITLE=$(kota tickets read "$TICKET_ID" | jq -r '.title')
   echo "# $TICKET_ID $TICKET_TITLE"
   echo "arco commit --until \"\$CHUNK_TIME\" --split \"$i/$N\" --ticket-id \"$TICKET_ID\" <<'EOF' && arco publish \"$TICKET_ID\""
-  echo "<description for $TICKET_ID>"
+  echo "pbpaste | jq -r '.structured_output.\"$TICKET_ID\".text'"
   echo "EOF"
   echo ""
 done
