@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Prefix script for Claude Code's CLAUDE_CODE_SHELL_PREFIX.
+# Logs the command to zsh_history_inf before executing it.
+
+HISTORY_APPEND="$HOME/lab/worktrees/main/tools/scratchpad/bin/zsh-history-append"
+
+cmd="$*"
+"$HISTORY_APPEND" "$cmd"
+eval "$cmd"
